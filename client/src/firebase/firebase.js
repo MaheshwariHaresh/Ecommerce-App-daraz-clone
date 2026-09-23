@@ -6,9 +6,9 @@ import {
 } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD_bKQWJQUKsvDpUkA_CmTDke1T9Fd5m7g",
-  authDomain: "darazclone-4c1a8.firebaseapp.com",
-  projectId: "darazclone-4c1a8",
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.envFIREBASE_PROJECT_ID,
 };
 
 const app = initializeApp(firebaseConfig);
