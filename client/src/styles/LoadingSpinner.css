@@ -1,0 +1,27 @@
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2.5px solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto;
+  display: inline-block;
+  vertical-align: middle;
+  min-width: 16px;
+  min-height: 16px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+/* Optional — adds a subtle disabled style to the button */
+.form-control:disabled {
+  opacity: 0.85;
+  cursor: not-allowed;
+}

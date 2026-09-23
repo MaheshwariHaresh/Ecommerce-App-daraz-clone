@@ -1,0 +1,152 @@
+.account-page {
+  display: flex;
+  gap: 30px;
+  padding: 0px 40px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.account-sidebar {
+  width: 230px;
+  padding: 20px;
+  font-size: 14px;
+  height: fit-content;
+}
+
+.hello-text {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.sidebar-section {
+  margin-bottom: 20px;
+}
+
+.sidebar-title {
+  color: #333;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.sidebar-section ul {
+  list-style: none;
+  padding-left: 0;
+  margin-left: 20px;
+}
+
+.sidebar-section li {
+  color: #555;
+  cursor: pointer;
+  margin-bottom: 6px;
+  transition: color 0.2s;
+}
+
+.sidebar-section li:hover,
+.sidebar-section li.active {
+  color: #f57224;
+}
+
+.sidebar-title.active {
+  color: #1a9cb7;
+}
+
+/* Main Content */
+.account-content {
+  flex: 1;
+  /* background-color: #fff; */
+  border: 1px solid #eee;
+  padding: 25px;
+}
+
+.content-title {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.account-grid {
+  display: grid;
+  /* grid-template-columns: 1fr 1fr; */
+  gap: 20px;
+}
+
+/* Cards */
+.account-card {
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  background-color: #fff;
+  padding: 15px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.card-header h6 {
+  font-size: 15px;
+  color: #333;
+  margin: 0;
+}
+
+.edit-link,
+.add-link {
+  color: #1a9cb7;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.card-body p {
+  margin: 6px 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #444;
+  margin-top: 10px;
+}
+
+hr {
+  border: none;
+  border-left: 1px solid #ddd;
+  height: 40px;
+  margin: 0 20px;
+}
+
+
+/* remove default blue underline */
+.account-sidebar a {
+  text-decoration: none;
+  color: #555;
+}
+
+/* hover orange (daraz) */
+.account-sidebar a:hover {
+  color: #f57224;
+}
+
+/* active route highlight */
+.account-sidebar a.active {
+  color: #f57224;
+}
+
+/* sidebar titles default */
+.account-sidebar .sidebar-title a {
+  color: #333;
+}
+
+/* title hover color (daraz blue) */
+.account-sidebar .sidebar-title a:hover {
+  color: #1a9cb7;
+}

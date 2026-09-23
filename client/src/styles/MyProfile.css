@@ -1,0 +1,140 @@
+.profile-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+.profile-card {
+  width: 100%;
+  max-width: 1000px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 40px; 
+  padding-bottom: 20px; 
+}
+
+
+.section-heading {
+  margin: 25px 0 10px;
+  font-size: 18px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+
+.profile-form {
+  padding: 30px;
+  background-color: #fff;
+  border: 1px solid #e5e5e5;;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  color: #444;
+  margin-bottom: 6px;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 80px 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.form-input select,
+select.form-input {
+  appearance: none;
+  background: #fff;
+  cursor: pointer;
+}
+
+
+.form-input:disabled {
+  background: #f9f9f9;
+  color: #777;
+}
+
+.form-input.editable {
+  border-color: #1a9cb7;
+}
+
+.inline-edit-btn {
+  position: absolute;
+  right: 8px;
+  top: 15%;
+  
+  
+  border: none;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #1a9cb7;
+}
+
+.form-actions {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.btn-primary {
+  background-color: #f57224;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #d65e1d;
+}
+
+.btn-outline-primary {
+  border: 1.5px solid #f57224;
+  background: transparent;
+  color: #f57224;
+  padding: 10px 22px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+  background: #f57224;
+  color: #fff;
+}
+
+.password-section {
+  text-align: center;
+  padding-bottom: 25px;
+}
+.password-section > button {
+  width: 94% !important;
+  margin-bottom: 20px !important;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+

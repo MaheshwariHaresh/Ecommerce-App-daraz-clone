@@ -1,0 +1,126 @@
+/* === Footer Styling === */
+.daraz-footer {
+  width: 100%;
+  background-color: #fff;
+  border-top: 1px solid #eee;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-top: 20px;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1200px;
+  flex-wrap: wrap;
+}
+
+.footer-section {
+  flex: 1;
+  min-width: 200px;
+  margin: 10px 0;
+}
+
+.footer-section h4 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.country-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 15px;
+}
+
+.country {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+.country img {
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  object-fit: cover;
+}
+
+.social-icons {
+  display: flex;
+  gap: 12px;
+  margin-top: 5px;
+}
+
+.social-icon {
+  font-size: 24px;
+  cursor: pointer;
+  transition: 0.2s;
+  color: #333;
+}
+
+.social-icon:hover {
+  color: #f85606;
+}
+
+.copyright {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  color: #666;
+  font-size: 14px;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .copyright {
+    justify-content: center;
+  }
+}
+
+/* === Floating Chat Button === */
+.floating-chat-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 50px;
+  background-color: #fff;
+  color: #004c6d;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  padding: 8px 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1100;
+}
+
+.floating-chat-btn:hover {
+  transform: translateY(-2px);
+  background-color: #f3faff;
+  border-color: #007bff;
+}
+
+.chat-icon {
+  color: #004c6d;
+  font-size: 22px;
+}
+
+.chat-text {
+  font-size: 15px;
+  color: #004c6d;
+}

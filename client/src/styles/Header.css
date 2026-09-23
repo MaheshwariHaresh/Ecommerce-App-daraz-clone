@@ -1,0 +1,191 @@
+.navbar {
+  font-family: sans-serif;
+  font-size: 17px;
+  line-height: 10px;
+  color: #fff;
+  height: 115px;
+  text-transform: uppercase;
+  background-color: rgb(248 86 6) !important;
+  position: -webkit-sticky;
+  position: sticky;
+  top: -25px;
+  padding: 5px;
+  z-index: 10;
+}
+
+.top-nav {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  width: 100%;
+  position: absolute;
+  right: 10%;
+  top: 0px;
+}
+.navbar-nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.nav-link {
+  font-weight: 300 !important;
+  color: #fff !important;
+  text-decoration: none !important;
+  font-size: 12px !important;
+}
+
+.active {
+  color: #000;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-family: "roboto ", sans-serif;
+  letter-spacing: 3px;
+}
+
+/* ----  DONALOAD DARAZ APP POPUP ---- */
+.app-popup {
+  position: absolute;
+  top: 72%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 15px 20px;
+  width: 400px;
+  z-index: 999;
+  margin-top: 10px;
+}
+
+.popup-arrow {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #fff;
+}
+
+.popup-content h6 {
+  font-size: 14px;
+  color: #333;
+}
+
+/* ---- HELP & SUPPORT DROPDOWN ---- */
+.help-dropdown {
+  position: absolute;
+  top: 71%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border-radius: 4px;
+  width: 220px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 10px 0;
+  z-index: 999;
+  margin-top: 10px;
+}
+
+.help-dropdown .popup-arrow {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #fff;
+}
+
+.dropdown-link {
+  display: block;
+  padding: 8px 10px;
+  color: darkgray;
+  text-transform: capitalize;
+  font-size: 12px;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.dropdown-link:hover {
+  background-color: #f5f5f5;
+  color: #ff5c00;
+}
+
+.disabled-link {
+  display: block;
+  padding: 8px 10px;
+  background-color: #f5f5f5;
+  color: darkgray;
+  font-size: 12px;
+  text-decoration: none;
+  transition: background 0.2s ease;
+  opacity: 0.5;
+  text-transform: capitalize;
+}
+
+.disabled-link:hover {
+  cursor: not-allowed;
+  color: darkgray;
+}
+.main-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 2px;
+}
+.search-cart-row {
+  width: 60%;
+  display: flex;
+  align-items: center;
+}
+.search-cart-row form {
+  flex: 1;
+}
+@media (max-width: 768px) {
+  /* reduce navbar hight */
+  .navbar {
+    height: auto;
+    padding: 10px 15px;
+  }
+
+  .top-nav {
+    display: none !important;
+  }
+
+  /* stack main nav vertically */
+  .main-nav {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+  }
+
+  /* logo center */
+  .daraz-logo {
+    display: none;
+  }
+
+  /* search full width */
+  .main-nav > form,
+  .input-group,
+  .search-input {
+    width: 100%;
+  }
+
+  /* cart icon move right */
+  .main-nav .ms-3 {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+  }
+}

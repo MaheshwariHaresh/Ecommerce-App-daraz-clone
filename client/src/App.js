@@ -5,63 +5,79 @@ import Contact from "./pages/Contact";
 import Policy from "./pages/Policy";
 import PageNotFound from "./pages/PageNotFound";
 import Register from "./pages/Auth/Register";
-// import { ToastContainer } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
 import Login from "./pages/Auth/Login";
-import Dashboard from "./pages/user/Dashboard";
-import PrivateRoute from "./components/Routes/Private";
+import ResetPassword from "./pages/Auth/ResetPassword";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
-import AdminRoute from "./components/Routes/AdminRoute";
+
+import UserPrivateRoute from "./components/Routes/UserPrivateRoute";
+import AdminPrivateRoute from "./components/Routes/AdminPrivateRoute";
+
 import AdminDashboard from "./pages/Admin/AdminDashboard";
-import CreateCategory from "./pages/Admin/CreateCategory";
-import CreateProducts from "./pages/Admin/CreateProducts";
-import Users from "./pages/Admin/Users";
-import Orders from "./pages/user/Orders";
-import Profile from "./pages/user/Profile";
-import Products from "./pages/Admin/Products";
-import UpdateProduct from "./pages/Admin/UpdateProduct";
-import Search from "./pages/Search";
-import ProductDetails from "./pages/ProductDetails";
-import Categories from "./pages/Categories";
-import SelectedCategory from "./pages/SelectedCategory";
-import CartPage from "./pages/CartPage";
+import AdminCategories from "./pages/Admin/AdminCategories";
+import AdminProducts from "./pages/Admin/AdminProducts";
+import AdminUsers from "./pages/Admin/AdminUsers";
 import AdminOrders from "./pages/Admin/AdminOrders";
+import AdminSubCategories from "./pages/Admin/AdminSubCategories";
+import CreateProduct from "./pages/Admin/CreateProduct";
+import UpdateProduct from "./pages/Admin/UpdateProduct";
+
+import Dashboard from "./pages/user/Dashboard";
+import MyOrders from "./pages/user/MyOrders";
+import MyProfile from "./pages/user/MyProfile";
+import CartPage from "./pages/CartPage";
+import ProductDetails from "./pages/ProductDetails";
+import SearchPage from "./pages/SearchPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import PaymentMethodPage from "./pages/PaymentMethodPage";
+import FullPageLoaderSpinner from "./components/Utils/FullPageLoaderSpinner";
+
 function App() {
   return (
-    <>
+    <div>
       <Routes>
+        {/* PUBLIC ROUTES */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/product/:slug" element={<ProductDetails />} />
-        <Route path="/categories" element={<Categories />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/category/:slug" element={<SelectedCategory />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/dashboard" element={<PrivateRoute />}>
-          <Route path="user" element={<Dashboard />} />
-          <Route path="user/orders" element={<Orders />} />
-          <Route path="user/profile" element={<Profile />} />
-        </Route>
-
-        {/* ADMIN ROUTES */}
-
-        <Route path="/dashboard" element={<AdminRoute />}>
-          <Route path="admin" element={<AdminDashboard />} />
-          <Route path="admin/create-category" element={<CreateCategory />} />
-          <Route path="admin/create-product" element={<CreateProducts />} />
-          <Route path="admin/product/:slug" element={<UpdateProduct />} />
-          <Route path="admin/products" element={<Products />} />
-          <Route path="admin/users" element={<Users />} />
-          <Route path="admin/orders" element={<AdminOrders />} />
-        </Route>
+        <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/search" element={<SearchPage />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/login" element={<Login />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/policy" element={<Policy />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route
+          path="/payment-method/:orderId"
+          element={<PaymentMethodPage />}
+        />
+
+        {/* USER ROUTES */}
+        <Route element={<UserPrivateRoute />}>
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/user/dashboard" element={<Dashboard />} />
+          <Route path="/user/orders" element={<MyOrders />} />
+          <Route path="/user/profile" element={<MyProfile />} />
+        </Route>
+
+        {/* ADMIN ROUTES */}
+        <Route path="/admin" element={<AdminPrivateRoute />}>
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="categories" element={<AdminCategories />} />
+          <Route path="products" element={<AdminProducts />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="products/create-product" element={<CreateProduct />} />
+          <Route path="products/:id" element={<UpdateProduct />} />
+          <Route path="category/:id" element={<AdminSubCategories />} />
+        </Route>
+
+        {/* 404  */}
         <Route path="*" element={<PageNotFound />} />
+
+        <Route path="loader" element={<FullPageLoaderSpinner />} />
       </Routes>
-    </>
+    </div>
   );
 }
 

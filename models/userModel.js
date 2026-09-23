@@ -7,33 +7,73 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+
     email: {
       type: String,
       required: true,
       unique: true,
+      match: [/^\S+@\S+\.\S+$/, "Please enter a valid email address"],
     },
+
+    loginType: {
+      type: String,
+      enum: ["email", "google", "facebook"],
+      default: "email",
+    },
+
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return this.loginType === "email";
+      },
     },
+
     phone: {
       type: String,
-      required: true,
+      match: [/^\d{10,15}$/, "Please enter a valid phone number"],
+      default: null,
     },
+
     address: {
-      type: {},
-      required: true,
+      province: {
+        type: String,
+        enum: ["Sindh", "Punjab", "KPK", "Bolochistan"],
+        default: null,
+      },
+
+      city: {
+        type: String,
+        default: null,
+      },
+
+      area: {
+        type: String,
+        default: null,
+      },
     },
-    answer: {
-      type: String,
-      required: true,
-    },
+
     role: {
       type: Number,
       default: 0,
+    },
+
+    date_of_birth: {
+      type: Date,
+      default: null,
+    },
+
+    gender: {
+      type: String,
+      enum: ["male", "female", "other"],
+      default: null,
+    },
+
+    resetToken: {
+      type: String,
+      default: null,
     },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("users", userSchema);
+export default mongoose.model("User", userSchema);

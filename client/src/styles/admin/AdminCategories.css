@@ -1,0 +1,40 @@
+.admin-categories-container {
+  padding: 20px;
+  background-color: #fff;
+  border: 2px solid #eee;
+  border-radius: 10px;
+}
+
+.admin-categories-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 35px;
+  border-bottom: 1px solid #eee;
+}
+
+.admin-categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.admin-category-card {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.admin-category-card-img {
+  height: 150px;
+  object-fit: cover;
+}
+
+.admin-category-link {
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+}
+
+.admin-category-link:hover {
+  color: #1677ff;
+}

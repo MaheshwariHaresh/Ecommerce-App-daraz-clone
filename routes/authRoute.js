@@ -1,20 +1,19 @@
-import express from "express";
+import { Router } from "express";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 import {
-  forgotPasswordController,
-  getAllOrdersController,
-  getOrdersController,
-  loginController,
-  orderStatusController,
   registerController,
-  testController,
+  loginController,
+  googleLoginController,
+  facebookLoginController,
+  forgotPasswordController,
+  resetPasswordController,
+  updatePasswordController,
   updateProfileController,
+  deleteUserAccountController,
+  updateAddressController,
 } from "../controllers/authController.js";
 
-// router object
-const router = express.Router();
-
-// routing
+const router = Router();
 
 // REGISTER  || METHOD POST
 router.post("/register", registerController);
@@ -22,35 +21,36 @@ router.post("/register", registerController);
 // LOGIN  || METHOD POST
 router.post("/login", loginController);
 
+// SOCIAL LOGIN
+router.post("/google-login", googleLoginController);
+router.post("/facebook-login", facebookLoginController);
+
 // FORGOT PASSWORD  || METHOD POST
 router.post("/forgot-password", forgotPasswordController);
 
-//test rout
-router.get("/test", requireSignIn, isAdmin, testController);
+// RESET PASSWORD  || METHOD POST
+router.post("/reset-password", resetPasswordController);
 
 // PROTECTED  || METHOD GET
 router.get("/user-auth", requireSignIn, (req, res) => {
   res.status(200).send({ ok: true });
 });
+
 // PROTECTED ROUTE FOR ADMIN || METHOD GET
 router.get("/admin-auth", requireSignIn, isAdmin, (req, res) => {
   res.status(200).send({ ok: true });
 });
 
-// update user profile
+// UPDATE USER PROFILE
 router.put("/profile", requireSignIn, updateProfileController);
 
-// orders
-router.get("/orders", requireSignIn, getOrdersController);
+// UPDATE USER ADDRESS
+router.put("/update-address", requireSignIn, updateAddressController);
 
-//all orders
-router.get("/all-orders", requireSignIn, isAdmin, getAllOrdersController);
+// UPDATE PASSWORD
+router.put("/change-password", requireSignIn, updatePasswordController);
 
-//order status update
-router.put(
-  "/order-status/:orderId",
-  requireSignIn,
-  isAdmin,
-  orderStatusController
-);
+// DELETE USER ACCOUNT
+router.delete("/delete-account", requireSignIn, deleteUserAccountController);
+
 export default router;

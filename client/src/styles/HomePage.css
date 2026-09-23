@@ -1,0 +1,199 @@
+.main-wrapper {
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: auto;
+}
+
+.slider-wrapper {
+  width: 100%;
+  height: 55vh;
+  /* margin: 0 80px; */
+  display: flex;
+}
+
+.slider-wrapper > div > img {
+  height: 100%;
+  width: 100%;
+}
+
+.section-wrapper {
+  width: 100%;
+  margin: auto;
+  margin-top: 10;
+  background-color: rgb(245 245 245);
+  position: relative;
+}
+
+.section-wrapper > section > hr {
+  margin: 0;
+}
+
+.section-headers {
+  background-color: #f5f5f5;
+  position: -webkit-sticky;
+  /* position: sticky;
+    top: 90px; */
+  padding: 5px;
+  z-index: 4;
+  /* box-shadow: 10px solid black; */
+}
+
+.section-headers > h5 {
+  font-size: 1.5rem !important;
+  margin-top: 15px;
+}
+
+.on-sale-now-wrapper {
+  height: 30%;
+  width: 100%;
+  background: #fff;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  color: red;
+}
+
+.flash-sale-card-area {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 15px;
+  justify-content: center;
+}
+
+.min-vh-105 {
+  min-height: 105vh;
+}
+.category-card {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  margin: 0 auto;
+  margin-bottom: 2px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.category-card a {
+  text-decoration: none;
+  color: inherit;
+  font-size: larger;
+  border: 1px solid lightgray;
+}
+
+.just-for-you-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 15px;
+  justify-content: center;
+}
+
+.shop-all-btn {
+  border: 1px solid #ff6b00 !important;
+  color: #ff6b00 !important;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 8px 18px;
+  transition: all 0.3s ease;
+  background-color: transparent;
+}
+
+.shop-all-btn:hover {
+  background-color: #ff6b00 !important;
+  color: #fff !important;
+}
+
+/* responsive */
+@media (max-width: 768px) {
+  .main-wrapper {
+    width: 100%;
+  }
+  .slider-wrapper > div > img {
+    display: none;
+  }
+}
+
+/* =============================
+=============== IMAGE SLIDER
+================================ */
+
+.slider-container {
+  width: 83%;
+  height: 360px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* SLIDING WRAPPER */
+.slides-wrapper {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s ease-in-out;
+}
+
+/* Single Slide */
+.slide {
+  min-width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000; /* optional: keeps letterbox style */
+}
+
+.slide-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* prevents zoom */
+}
+
+/* Arrows */
+.slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  z-index: 3;
+  /* border-radius: 10px 20px; */
+  color: white;
+}
+
+.slider-arrow.left {
+  left: 0px;
+  border-radius: 0px 15px 15px 0px;
+}
+
+.slider-arrow.right {
+  right: 0px;
+  border-radius: 15px 0px 0px 15px;
+}
+
+/* Dots */
+.slider-dots {
+  position: absolute;
+  bottom: 12px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background: #ffffff88;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.dot.active {
+  background: #fff;
+  width: 12px;
+  height: 12px;
+}

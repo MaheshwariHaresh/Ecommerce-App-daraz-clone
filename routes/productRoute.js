@@ -5,68 +5,57 @@ import {
   braintreeTokenController,
   createProductController,
   deleteProductController,
-  getProductController,
-  getSingleProductController,
-  productCategoryController,
+  getProductsController,
+  getProductByIdController,
   productCountController,
   productFilterController,
   productListController,
-  productPhotoController,
-  relatedProductController,
   searchProductController,
   updateProductController,
+  getProductsByCategoryController,
 } from "../controllers/productController.js";
-import formidable from "express-formidable";
 const router = express.Router();
 
-//routes
-//create products
+//  CREATE PRODUCT
 router.post(
   "/create-product",
   requireSignIn,
   isAdmin,
-  formidable(),
   createProductController
 );
 
-//update products
+//  UPDATE PRODUCT
 router.put(
-  "/update-product/:pid",
+  "/update/:pid",
   requireSignIn,
   isAdmin,
-  formidable(),
   updateProductController
 );
 
-// get all products
-router.get("/get-product", getProductController);
+//  GET ALL PRODUCTS
+router.get("/get-products", getProductsController);
 
-// get single products
-router.get("/get-product/:slug", getSingleProductController);
 
-// get images
-router.get("/product-photo/:pid", productPhotoController);
-
-// delete product
+// DELETE PRODUCT
 router.delete("/delete-product/:pid", deleteProductController);
 
-// filter product
-router.post("/product-filters", productFilterController);
+// FILTER PRODUCTS BY CATEGORY OR SUBCATEGORY
+router.get("/filter", productFilterController);
 
-// product count
-router.get("/product-count", productCountController);
+// PRODUCT COUNT
+router.get("/count", productCountController);
 
-// product per page
-router.get("/product-list/:page", productListController);
+// PRODUCT PER PAGE
+router.get("/list/:page", productListController);
 
-// search product
-router.get("/search/:keyword", searchProductController);
+// SEARCH PRODUCT BY (KEYWORD CATEGORY SUBCATEGORY)
+router.get("/search", searchProductController);
 
-// similar product
-router.get("/related-product/:pid/:cid", relatedProductController);
+// GET PRODUCTS BY CATEGORY
+router.get("/category-products/:id", getProductsByCategoryController);
 
-// selected category wise product
-router.get("/product-category/:slug", productCategoryController);
+//  GET SINGLE PRODUCT
+router.get("/:pid", getProductByIdController);
 
 // payments routes
 // token

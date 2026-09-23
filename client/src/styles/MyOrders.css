@@ -1,0 +1,60 @@
+.my-orders-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.order-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border:1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.order-left {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.order-left img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border: 1px solid #eee;
+  border-radius: 6px;
+}
+
+.order-id {
+  font-weight: 600;
+  margin: 0;
+}
+
+.order-status {
+  color: green;
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.order-right {
+  text-align: right;
+}
+
+.order-price {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.order-right button {
+  background: #f57224;
+  color: #fff;
+  border: none;
+  padding: 7px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+}

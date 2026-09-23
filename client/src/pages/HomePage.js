@@ -1,88 +1,98 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout/Layout";
-import axios from "axios";
-import { Checkbox, Radio } from "antd";
-import { Prices } from "../components/Prices";
-import { useNavigate } from "react-router-dom";
-import { useCart } from "../context/Cart";
-import toast from "react-hot-toast";
+import "../styles/HomePage.css";
+import axios from "../components/Utils/AxiosConfig";
+import { Link } from "react-router-dom";
+import ImageSlider from "../components/M-Designs/ImageSlider";
+import useRandomSubcategories from "../hooks/useRandomSubcategories";
+import FlashSaleCard from "../components/M-Designs/FlashSaleCard";
+import CategoryCard from "../components/M-Designs/CategoryCard";
+import JustForYouCard from "../components/M-Designs/JustForYouCard";
+import SideBarNav from "../components/M-Designs/SideBarNav";
+
+const slides = [
+  {
+    url: "http://localhost:3000/images/slider/slider-image1.jpg",
+    title: "Contact",
+  },
+  {
+    url: "http://localhost:3000/images/slider/slider-image2.jpg",
+    title: "ContactUs",
+  },
+  {
+    url: "http://localhost:3000/images/slider/slider-image3.jpg",
+    title: "About",
+  },
+  {
+    url: "http://localhost:3000/images/slider/slider-image4.jpg",
+    title: "Banner",
+  },
+  {
+    url: "http://localhost:3000/images/slider/slider-image5.jpg",
+    title: "Banner",
+  },
+  {
+    url: "http://localhost:3000/images/slider/slider-image6.jpg",
+    title: "Banner",
+  },
+  {
+    url: "http://localhost:3000/images/slider/slider-image7.jpg",
+    title: "Banner",
+  },
+];
 const HomePage = () => {
-  const [cart, setCart] = useCart();
-  const navigate = useNavigate();
+  const subCategories = useRandomSubcategories(16) || [];
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [checked, setChecked] = useState([]);
-  const [radio, setRadio] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-
-  // get all categories
-  const getAllCategory = async () => {
-    try {
-      const { data } = await axios.get(
-        `${process.env.REACT_APP_API}/api/v1/category/getall-category`
-      );
-      if (data?.success) {
-        setCategories(data?.category);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    getAllCategory();
-    getTotal();
-  }, []);
 
   // get all products
   const getAllProducts = async () => {
     try {
       setLoading(true);
       const { data } = await axios.get(
-        `${process.env.REACT_APP_API}/api/v1/product/product-list/${page}`
+        `${process.env.REACT_APP_API}/api/v1/product/list/${page}`
       );
       setLoading(false);
       setProducts(data.products);
+      sessionStorage.setItem("randomProducts", JSON.stringify(data.products));
     } catch (error) {
       setLoading(false);
       console.log(error);
     }
   };
 
-  // filter by category
-  const handleFilter = (value, id) => {
-    let all = [...checked];
-    if (value) {
-      all.push(id);
-    } else {
-      all = all.filter((c) => c !== id);
+  useEffect(() => {
+    const saved = sessionStorage.getItem("randomProducts");
+    if (saved) {
+      setProducts(JSON.parse(saved));
+      return;
     }
-    setChecked(all);
-  };
-
+    getAllProducts();
+  }, []);
   // getTotal Count
   const getTotal = async () => {
     try {
       const { data } = await axios.get(
-        `${process.env.REACT_APP_API}/api/v1/product/product-count`
+        `${process.env.REACT_APP_API}/api/v1/product/count`
       );
       setTotal(data?.total);
     } catch (error) {
       console.log(error);
     }
   };
+
   useEffect(() => {
-    if (page === 1) return;
-    loadMore();
-  }, [page]);
+    getTotal();
+  }, [total]);
+
   // LOAD MORE
   const loadMore = async () => {
     try {
       setLoading(true);
       const { data } = await axios.get(
-        `${process.env.REACT_APP_API}/api/v1/product/product-list/${page}`
+        `${process.env.REACT_APP_API}/api/v1/product/list/${page}`
       );
       setLoading(false);
       setProducts([...products, ...data?.products]);
@@ -94,115 +104,117 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    if (!checked.length || !radio.length) getAllProducts();
-  }, [checked.length, radio.length]);
-
-  useEffect(() => {
-    if (checked.length || radio.length) filterProduct();
-  }, [checked, radio]);
-
-  // get filtered Products
-  const filterProduct = async () => {
-    try {
-      const { data } = await axios.post(
-        `${process.env.REACT_APP_API}/api/v1/product/product-filters`,
-        { checked, radio }
-      );
-      setProducts(data?.products);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    if (page === 1) return;
+    loadMore();
+  }, [page]);
 
   return (
     <Layout title={"All Products - Best offers"}>
-      <div className="row mt-3">
-        <div className="col-md-2">
-          <h4 className="text-center">Filter By Category</h4>
-          <div className="d-flex flex-column ms-2">
-            {categories?.map((c) => (
-              <Checkbox
-                key={c._id}
-                onChange={(e) => handleFilter(e.target.checked, c._id)}
-              >
-                {c.name}
-              </Checkbox>
-            ))}
-          </div>
-          {/* filter by price */}
-          <h4 className="text-center mt-4">Filter By Price</h4>
-          <div className="d-flex flex-column ms-2">
-            <Radio.Group onChange={(e) => setRadio(e.target.value)}>
-              {Prices?.map((p) => (
-                <div key={p._id}>
-                  <Radio value={p.array}>{p.name}</Radio>
-                </div>
-              ))}
-            </Radio.Group>
-          </div>
-          <div className="d-flex flex-column">
-            <button
-              className="btn btn-danger"
-              onClick={() => window.location.reload()}
-            >
-              Reset Filter
-            </button>
+      <div className="main-wrapper">
+        {/* Image Slider */}
+        <div className="slider-wrapper">
+          <ImageSlider slides={slides} />
+          <div>
+            <img src="/images/slider/try-daraz-app.png" alt="daraz logo" />
           </div>
         </div>
-        <div className="col-md-9">
-          {/* {JSON.stringify(radio, null, 4)} */}
-          <h1 className="text-center">All Product</h1>
-          <div className="d-flex flex-wrap">
-            {products?.map((p) => (
-              <div className="card m-2" style={{ width: "18rem" }}>
-                <img
-                  src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                  className="card-img-top"
-                  alt={p.name}
-                />
-                <div className="card-body">
-                  <h5 className="card-title">{p.name}</h5>
-                  <p className="card-text">{p.description.substring(0, 30)}</p>
-                  <h2 className="card-text">$ {p.price}</h2>
-                  <button
-                    className="btn btn-primary ms-1"
-                    onClick={() => navigate(`/product/${p.slug}`)}
-                  >
-                    More Details
-                  </button>
-                  <button
-                    className="btn btn-secondary ms-1"
-                    onClick={() => {
-                      setCart([...cart, p]);
-                      // storing cart items into local storage
-                      localStorage.setItem(
-                        "cart",
-                        JSON.stringify([...cart, p])
-                      );
-                      toast.success("Item Added to Cart");
-                    }}
-                  >
-                    Add To Cart
-                  </button>
+        <div className="section-wrapper">
+          {/* flash sale section */}
+          <section id="flash-sale-section">
+            <div className="section-headers">
+              <h5>Flash Sale</h5>
+            </div>
+
+            <div>
+              <div className="on-sale-now-wrapper">
+                <span>On Sale Now</span>
+                <button className="btn btn-outline-danger">
+                  SHOP ALL PRODUCTS
+                </button>
+              </div>
+            </div>
+            <hr />
+            <div className="row g-0 bg-white">
+              <div className="col-md-12 mt-3 min-vh-105">
+                <div className="flash-sale-card-area">
+                  {products.slice(0, 12).map((product) => (
+                    <Link
+                      key={product._id}
+                      to={`/product/${product._id}`}
+                      style={{ textDecoration: "none", color: "inherit" }}
+                    >
+                      <FlashSaleCard {...product} />
+                    </Link>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
-          <div className="m-2 p-3">
-            {products && products.length < total && (
-              <button
-                className="btn btn-warning"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setPage(page + 1);
-                }}
-              >
-                {loading ? "Loading..." : "Load More"}
-              </button>
-            )}
-          </div>
+            </div>
+          </section>
+
+          {/* category section */}
+          <section id="categories-section">
+            <div className="section-headers ">
+              <h5>Categories</h5>
+            </div>
+
+            <div className="category-card">
+              {subCategories?.map((category) => (
+                <Link
+                  to={`/search?subcategory=${category._id}`}
+                  key={category._id}
+                >
+                  <CategoryCard {...category} />
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          {/* just for you section */}
+          <section id="justforyou-section">
+            <div className="section-headers">
+              <h5>Just For You</h5>
+            </div>
+            <div className="row">
+              <div className="col-md-12">
+                <div className="just-for-you-wrapper">
+                  {products?.slice(0, page * 24).map((product) => (
+                    <Link
+                      to={`/product/${product._id}`}
+                      key={product._id}
+                      style={{
+                        textDecoration: "none",
+                        color: "inherit",
+                      }}
+                    >
+                      <JustForYouCard
+                        {...product}
+                        rating={product.rating || 4.2}
+                      />
+                    </Link>
+                  ))}
+                </div>
+
+                {/* Load More Button */}
+                <div className="m-2 p-3 text-center">
+                  {products && products.length < total && (
+                    <button
+                      style={{ width: "250px" }}
+                      className="btn btn-outline-danger"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(page + 1);
+                      }}
+                    >
+                      {loading ? "Loading..." : "Load More"}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
+      <SideBarNav />
     </Layout>
   );
 };

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import AdminMenu from "../../components/Layout/AdminMenu";
-import Layout from "../../components/Layout/Layout";
+import AdminLayout from "../../components/Layout/Admin/AdminLayout";
 import { useAuth } from "../../context/auth";
 import moment from "moment";
 import { Select } from "antd";
-import axios from "axios";
+import axios from "../../components/Utils/AxiosConfig";
 
 const { Option } = Select;
 const AdminOrders = () => {
@@ -15,7 +14,6 @@ const AdminOrders = () => {
     "Delivered",
     "Canceled",
   ]);
-  const [changeStatus, setChangeStatus] = useState("");
   const [auth, setAuth] = useAuth();
   const [orders, setOrders] = useState([]);
 
@@ -45,13 +43,11 @@ const AdminOrders = () => {
     }
   };
   return (
-    <Layout>
+    <AdminLayout>
       <div className="container-fluid m-3 p-3">
         <div className="row">
-          <div className="col-md-3">
-            <AdminMenu />
-          </div>
-          <div className="col-md-9">
+          
+          <div className="col-md-12">
             <h1 className="text-center">All Orders</h1>
             {orders?.map((o, i) => {
               return (
@@ -116,7 +112,7 @@ const AdminOrders = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </AdminLayout>
   );
 };
 

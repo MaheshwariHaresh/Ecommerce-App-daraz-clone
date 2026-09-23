@@ -1,195 +1,261 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout/Layout";
-import { useCart } from "../context/Cart";
-import { useAuth } from "../context/auth";
 import { useNavigate } from "react-router-dom";
-import DropIn from "braintree-web-drop-in-react";
-import axios from "axios";
-import toast from "react-hot-toast";
+import axios from "../components/Utils/AxiosConfig";
+import { toast } from "react-toastify";
+import "../styles/CartPage.css";
+import EmptyCart from "./EmptyCartPage";
+import { DeleteOutlined } from "@ant-design/icons";
+import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
+import { useCart } from "../context/Cart";
 
 const CartPage = () => {
-  const [cart, setCart] = useCart();
-  const [auth, setAuth] = useAuth();
-  const [clientToken, setClientToken] = useState("");
-  const [instance, setInstance] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { cart, setCart, loadCartItems } = useCart();
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+  const [shippingFees, setShippingFees] = useState(0);
+  const [totalSelectedQty, setTotalSelectedQty] = useState(0);
 
   const navigate = useNavigate();
 
-  // total price calculation
-  const totalPrice = () => {
-    try {
-      let total = 0;
-      cart?.map((item) => {
-        total = total + item.price;
-      });
-      return total.toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  //   remove cart item
-  const removeCartItem = (pid) => {
-    try {
-      let myCart = [...cart];
-      let index = myCart.findIndex((item) => item._id === pid);
-      myCart.splice(index, 1);
-      setCart(myCart);
-      localStorage.setItem("cart", JSON.stringify(myCart));
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // ✅ Fetch cart
 
-  // get payment gateway token
-  const getToken = async () => {
-    try {
-      const { data } = await axios.get(
-        `${process.env.REACT_APP_API}/api/v1/product/braintree/token`
-      );
-      setClientToken(data?.clientToken);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   useEffect(() => {
-    getToken();
-  }, [auth?.token]);
+    loadCartItems();
+  }, []);
 
-  // handlePayment
-  const handlePayment = async () => {
-    try {
-      setLoading(true);
-      const { nonce } = await instance.requestPaymentMethod();
-      const { data } = await axios.post(
-        `${process.env.REACT_APP_API}/api/v1/product/braintree/payment`,
-        { nonce, cart }
-      );
-      setLoading(false);
-      localStorage.removeItem("cart");
-      setCart([]);
-      navigate("/dashboard/user/orders");
-      toast.success("Payment Completed Successfully");
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
+  // ✅ Select All toggle
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedItems([]);
+      setSelectAll(false);
+    } else {
+      const allIds = cart.map((item) => item.product._id);
+      setSelectedItems(allIds);
+      setSelectAll(true);
     }
+  };
+
+  // ✅ Toggle single item
+  const handleItemSelect = (pid) => {
+    if (selectedItems.includes(pid)) {
+      setSelectedItems(selectedItems.filter((id) => id !== pid));
+      setSelectAll(false);
+    } else {
+      const updated = [...selectedItems, pid];
+      setSelectedItems(updated);
+      if (updated.length === cart.length) setSelectAll(true);
+    }
+  };
+
+  // ✅ Remove selected items
+  const removeSelectedItems = async () => {
+    if (selectedItems.length === 0) {
+      toast.info("No items selected");
+      return;
+    }
+
+    try {
+      await Promise.all(
+        selectedItems.map((pid) =>
+          axios.delete(
+            `${process.env.REACT_APP_API}/api/v1/cart/delete-cart-item/${pid}`
+          )
+        )
+      );
+      toast.success("Selected items deleted");
+      setSelectedItems([]);
+      setSelectAll(false);
+      loadCartItems();
+    } catch (error) {
+      toast.error("Error while deleting selected items");
+    }
+  };
+
+  // ✅ Handle quantity change
+  const updateQuantity = async (pid, newQty) => {
+    if (newQty < 1) return;
+    const updatedCart = cart.map((item) =>
+      item.product._id === pid ? { ...item, quantity: newQty } : item
+    );
+    setCart(updatedCart);
+
+    try {
+      await axios.put(
+        `${process.env.REACT_APP_API}/api/v1/cart/update-cart-item`,
+        {
+          productId: pid,
+          quantity: newQty,
+        }
+      );
+    } catch {
+      console.log("Local only update");
+    }
+  };
+
+  // ✅ Total price (only selected)
+  const totalPrice = () =>
+    cart
+      .filter((item) => selectedItems.includes(item.product._id))
+      .reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+
+  // set shipping fees
+  useEffect(() => {
+    const qty = cart
+      .filter((item) => selectedItems.includes(item.product._id))
+      .reduce((sum, item) => sum + item.quantity, 0);
+
+    setTotalSelectedQty(qty);
+    setShippingFees(qty * 100);
+  }, [selectedItems, cart]);
+
+  // Handle Proceed To Checkout
+  const handleProceedToCheckout = () => {
+    localStorage.removeItem("checkoutProduct");
+    navigate("/checkout");
   };
   return (
     <Layout>
-      <div className="container">
-        <div className="row">
-          <div className="col-md-12">
-            <h1 className="text-center bg-light p-2 mb-1">
-              {`Hello ${auth?.token && auth?.user.name}`}
-            </h1>
-            <h4 className="text-center">
-              {cart?.length
-                ? `You Have ${cart.length} Items In Your Cart ${
-                    auth?.token ? "" : "please login to checkout"
-                  }`
-                : "Your Cart In Empty"}
-            </h4>
+      {cart?.length > 0 ? (
+        <div className="cart-container">
+          {/* LEFT SIDE */}
+          <div className="cart-left">
+            <div className="cart-header">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={selectAll}
+                  onChange={handleSelectAll}
+                />
+                SELECT ALL ({cart.length} ITEM{cart.length > 1 ? "S" : ""})
+              </label>
+              <button className="delete-btn" onClick={removeSelectedItems}>
+                <DeleteOutlined />
+                Delete
+              </button>
+            </div>
+
+            {cart
+              .filter((item) => item?.product)
+              .map((item) => (
+                <div key={item._id} className="cart-seller-section">
+                  <div className="cart-item">
+                    <input
+                      type="checkbox"
+                      checked={selectedItems.includes(item.product._id)}
+                      onChange={() => handleItemSelect(item.product._id)}
+                    />
+                    <img
+                      src={item.product.image}
+                      alt={item.product.name}
+                      className="cart-item-img"
+                    />
+
+                    <div className="cart-item-info">
+                      <h6>{item.product.name}</h6>
+                      <p className="cart-item-desc">
+                        {item.product.description?.substring(0, 150)}...
+                      </p>
+                    </div>
+
+                    <div className="cart-item-price">
+                      <p className="new-price">
+                        Rs.{" "}
+                        {Number(item?.product?.price).toLocaleString("en-IN")}
+                      </p>
+                      <div className="cart-item-actions">
+                        <span className="wishlist">
+                          <FavoriteBorderOutlinedIcon />
+                        </span>
+                        <span
+                          className="delete"
+                          onClick={() =>
+                            axios
+                              .delete(
+                                `${process.env.REACT_APP_API}/api/v1/cart/delete-cart-item/${item.product._id}`
+                              )
+                              .then(() => {
+                                toast.success("Item removed");
+                                loadCartItems();
+                              })
+                          }
+                        >
+                          <DeleteOutlined />
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* ✅ Quantity controls */}
+                    <div className="cart-item-qty">
+                      <button
+                        onClick={() =>
+                          updateQuantity(item?.product?._id, item.quantity - 1)
+                        }
+                      >
+                        –
+                      </button>
+                      <span>{item.quantity}</span>
+                      <button
+                        onClick={() =>
+                          updateQuantity(item?.product?._id, item.quantity + 1)
+                        }
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
           </div>
-        </div>
-        <div className="row">
-          <div className="col-md-8">
-            {cart?.map((p) => (
-              <div className="row card mb-2 p-3 flex-row">
-                <div className="col-md-4">
-                  <img
-                    src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                    className="card-img-top"
-                    alt={p.name}
-                    width={"100px"}
-                    height={"100px"}
-                  />
-                </div>
-                <div className="col-md-8">
-                  <p>{p.name}</p>
-                  <p>{p.description.substring(0, 30)}</p>
-                  <p>Price : {p.price}</p>
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => removeCartItem(p._id)}
-                  >
-                    Remove
-                  </button>
-                </div>
+
+          {/* RIGHT SIDE */}
+          <div className="cart-right">
+            <div className="order-summary">
+              <h5>Order Summary</h5>
+
+              <div className="summary-row">
+                <span>Subtotal ({totalSelectedQty} items)</span>
+                <span>Rs. {Number(totalPrice()).toLocaleString("en-IN")}</span>
               </div>
-            ))}
-          </div>
-          <div className="col-md-4 text-center">
-            <h2>Cart Summary</h2>
-            <p>Total | Checkout | Payment</p>
-            <hr />
-            <h4>Total : {totalPrice()}</h4>
-            {auth?.user?.address ? (
-              <>
-                <div className="mb-3">
-                  <h4>Current Address</h4>
-                  <h5>{auth?.user.address}</h5>
-                  <button
-                    className="btn btn-outline-warning"
-                    onClick={() => navigate("/dashboard/user/profile")}
-                  >
-                    Update Address
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="mb-3">
-                {auth?.token ? (
-                  <button
-                    className="btn btn-outline-warning"
-                    onClick={() => navigate("/dashboard/user/profile")}
-                  >
-                    Update Address
-                  </button>
-                ) : (
-                  <button
-                    className="btn btn-outline-warning"
-                    onClick={() =>
-                      navigate("/login", {
-                        state: "/cart",
-                      })
-                    }
-                  >
-                    Please Login To Checkout
-                  </button>
-                )}
+
+              <div className="summary-row">
+                <span>Shipping Fee</span>
+                <span>Rs. {Number(shippingFees).toLocaleString("en-IN")}</span>
               </div>
-            )}
-            <div className="mt-2">
-              {!clientToken || !cart.length ? (
-                ""
-              ) : (
-                <>
-                  <DropIn
-                    options={{
-                      authorization: clientToken,
-                      paypal: {
-                        flow: "vault",
-                      },
-                    }}
-                    onInstance={(instance) => setInstance(instance)}
-                  />
-                  <button
-                    className="btn btn-primary"
-                    onClick={handlePayment}
-                    // disabled={!loading || !instance}
-                  >
-                    {loading ? "Processing ..." : "Make Payment"}
-                  </button>
-                </>
-              )}
+
+              <div className="voucher-section">
+                <input type="text" placeholder="Enter Voucher Code" />
+                <button>APPLY</button>
+              </div>
+
+              <div className="summary-total">
+                <span>Total</span>
+                <span>
+                  Rs.{" "}
+                  {Number(totalPrice() + shippingFees).toLocaleString("en-IN")}
+                </span>
+              </div>
+
+              <button
+                className="checkout-btn"
+                onClick={handleProceedToCheckout}
+                disabled={selectedItems.length === 0}
+                style={{
+                  cursor: selectedItems.length === 0 ? "not-allowed" : "",
+                  backgroundColor: selectedItems.length === 0 ? "#ccc" : "",
+                }}
+              >
+                PROCEED TO CHECKOUT ({selectedItems.length})
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <EmptyCart
+          messageText={"There are no items in this cart"}
+          btnText={"Continue Shopping"}
+        />
+      )}
     </Layout>
   );
 };

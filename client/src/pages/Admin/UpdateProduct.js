@@ -1,86 +1,83 @@
 import React, { useState, useEffect } from "react";
-import Layout from "../../components/Layout/Layout";
-import AdminMenu from "../../components/Layout/AdminMenu";
-import axios from "axios";
-import toast from "react-hot-toast";
-import { Select } from "antd";
+import AdminLayout from "../../components/Layout/Admin/AdminLayout";
+import axios from "../../components/Utils/AxiosConfig";
+import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
-const { Option } = Select;
+import "../../styles/admin/CreateProduct.css";
 
 const UpdateProduct = () => {
   const navigate = useNavigate();
   const params = useParams();
-  const [categories, setCategories] = useState([]);
-  const [category, setCategory] = useState("");
-  const [photo, setPhoto] = useState("");
+
+  const [image, setImage] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [shipping, setShipping] = useState("");
-  const [id, setId] = useState("");
+  const [stock, setStock] = useState("");
+  const [brand, setBrand] = useState("");
+  const [discount, setDiscount] = useState("");
+  const [colors, setColors] = useState("");
+  const [tags, setTags] = useState("");
+  const [sizes, setSizes] = useState("");
+  const [category, setCategory] = useState("");
+  const [subCategory, setSubCategory] = useState("");
 
-  // get single product
+  // Fetch single product
   const getSingleProduct = async () => {
     try {
       const { data } = await axios.get(
-        `${process.env.REACT_APP_API}/api/v1/product/get-product/${params.slug}`
+        `${process.env.REACT_APP_API}/api/v1/product/${params.id}`
       );
-      setName(data.product.name);
-      setId(data.product._id);
-      setDescription(data.product.description);
-      setPrice(data.product.price);
-      setQuantity(data.product.quantity);
-      setShipping(data.product.shipping);
-      setCategory(data.product.category._id);
+      const p = data.product;
+      setName(p.name);
+      setDescription(p.description);
+      setPrice(p.price);
+      setStock(p.stock);
+      setBrand(p.brand || "");
+      setDiscount(p.discount || "");
+      setColors(Array.isArray(p.colors) ? p.colors.join(", ") : "");
+      setTags(Array.isArray(p.tags) ? p.tags.join(", ") : "");
+      setSizes(Array.isArray(p.sizes) ? p.sizes.join(", ") : "");
+      setImage(p.image && p.image[0]);
+      setCategory(data.product.category);
+      setSubCategory(data.product.subCategory);
     } catch (error) {
       console.log(error);
+      toast.error("Error fetching product");
     }
   };
+
   useEffect(() => {
     getSingleProduct();
-    // eslint-disable-next-line
   }, []);
 
-  // get all categories
-  const getAllCategory = async () => {
-    try {
-      const { data } = await axios.get(
-        `${process.env.REACT_APP_API}/api/v1/category/getall-category`
-      );
-      if (data?.success) {
-        setCategories(data?.category);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong in getting category");
-    }
-  };
-  useEffect(() => {
-    getAllCategory();
-  }, []);
-
-  // update product function
-
+  // Update product
   const handleUpdateProduct = async (e) => {
     e.preventDefault();
     try {
-      const productData = new FormData();
-      productData.append("name", name);
-      productData.append("description", description);
-      productData.append("price", price);
-      productData.append("quantity", quantity);
-      photo && productData.append("photo", photo);
-      productData.append("category", category);
-      const { data } = axios.put(
-        `${process.env.REACT_APP_API}/api/v1/product/update-product/${id}`,
+      const productData = {
+        name,
+        description,
+        price,
+        stock,
+        brand,
+        discount,
+        colors: colors.split(",").map((c) => c.trim()),
+        tags: tags.split(",").map((t) => t.trim()),
+        sizes: sizes.split(",").map((s) => s.trim()),
+        image,
+      };
+
+      const { data } = await axios.put(
+        `${process.env.REACT_APP_API}/api/v1/product/update/${params.id}`,
         productData
       );
+
       if (data?.success) {
-        toast.error(data?.message);
-      } else {
         toast.success("Product Updated Successfully");
-        navigate("/dashboard/admin/products");
+        navigate("/admin/products");
+      } else {
+        toast.error(data?.message);
       }
     } catch (error) {
       console.log(error);
@@ -88,156 +85,189 @@ const UpdateProduct = () => {
     }
   };
 
-  // delete product
+  // Delete product
   const handleDeleteProduct = async () => {
     try {
-      let confirm = window.prompt("Are You Sure Want To Delete This Product ?");
-      if (!confirm) return;
-      const { data } = await axios.delete(
-        `${process.env.REACT_APP_API}/api/v1/product/delete-product/${id}`
+      const confirmDelete = window.confirm(
+        "Are you sure you want to delete this product?"
+      );
+      if (!confirmDelete) return;
+
+      await axios.delete(
+        `${process.env.REACT_APP_API}/api/v1/product/delete-product/${params.id}`
       );
       toast.success("Product Deleted Successfully");
-      navigate("/dashboard/admin/products");
+      navigate("/admin/products");
     } catch (error) {
-      console.log(error);
       toast.error("Something went wrong");
     }
   };
 
   return (
-    <Layout title={"Dashboard - create product"}>
-      <div className="container-fluid m-3 p-3">
-        <div className="row">
-          <div className="col-md-3">
-            <AdminMenu />
-          </div>
-          <div className="col-md-9">
-            <h1>Update Products</h1>
-            <div className="m-1 w-75">
-              <Select
-                bordered={false}
-                placeholder="Select a Category"
-                size="large"
-                showSearch
-                className="form-select mb-3"
-                onChange={(value) => {
-                  setCategory(value);
-                }}
-                value={category}
-              >
-                {categories?.map((category) => (
-                  <Option key={category._id} value={category._id}>
-                    {category.name}
-                  </Option>
-                ))}
-              </Select>
-              <div className="mb-3 ">
-                <label className="btn btn-outline-secondary col-md-12">
-                  {photo ? photo.name : "Upload Image"}
-                  <input
-                    type="file"
-                    name="photo"
-                    accept="image/*"
-                    onChange={(e) => setPhoto(e.target.files[0])}
-                    hidden
-                  ></input>
-                </label>
-              </div>
-              <div className="mb-3">
-                {photo ? (
-                  <div className="text-center">
-                    <img
-                      src={URL.createObjectURL(photo)}
-                      alt="product-image"
-                      height={"200px"}
-                      className="img img-responsive"
-                    />
-                  </div>
-                ) : (
-                  <div className="text-center">
-                    <img
-                      src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${id}`}
-                      alt="product-image"
-                      height={"200px"}
-                      className="img img-responsive"
-                    />
-                  </div>
-                )}
-              </div>
-              <div className="mb-3">
-                <input
-                  type="text"
-                  value={name}
-                  placeholder="Enter Name"
-                  className="form-control"
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-              <div className="mb-3">
-                <textarea
-                  type="text"
-                  value={description}
-                  placeholder="Enter Description"
-                  className="form-control"
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
-              <div className="mb-3">
-                <input
-                  type="number"
-                  value={price}
-                  placeholder="Enter Price"
-                  className="form-control"
-                  onChange={(e) => setPrice(e.target.value)}
-                />
-              </div>
-              <div className="mb-3">
-                <input
-                  type="number"
-                  value={quantity}
-                  placeholder="Enter Quantity"
-                  className="form-control"
-                  onChange={(e) => setQuantity(e.target.value)}
-                />
-              </div>
-              <div className="mb-3">
-                <Select
-                  bordered={false}
-                  placeholder="Select Shipping"
-                  size="large"
-                  className="form-select mb-3"
-                  onChange={(value) => {
-                    setShipping(value);
-                  }}
-                  value={shipping ? "Yes" : "No"}
-                >
-                  <Option value="0">No</Option>
-                  <Option value="1">Yes</Option>
-                </Select>
-              </div>
-              <div className="d-flex">
-                <div className="mb-3">
-                  <button
-                    className="btn btn-primary"
-                    onClick={handleUpdateProduct}
-                  >
-                    UPDATE PRODUCT
-                  </button>
+    <AdminLayout title="Dashboard - Update Product">
+      <div className="create-product-container">
+        <h2>Update Product</h2>
+        <form className="create-product-form" onSubmit={handleUpdateProduct}>
+          {/* Product Info Row */}
+          <div className="form-row">
+            <div className="form-group">
+              <label>Product Name</label>
+              <input
+                type="text"
+                className="form-input"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter product name"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Brand</label>
+              <input
+                type="text"
+                className="form-input"
+                value={brand}
+                onChange={(e) => setBrand(e.target.value)}
+                placeholder="Enter brand"
+              />
+            </div>
+            <div className="form-group">
+              <label>Price (PKR)</label>
+              <input
+                type="number"
+                className="form-input"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="Enter price"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Discount (%)</label>
+              <input
+                type="number"
+                className="form-input"
+                value={discount}
+                onChange={(e) => setDiscount(e.target.value)}
+                placeholder="Enter discount"
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Category</label>
+              <input
+                type="text"
+                className="form-input"
+                value={category?.name || "—"}
+                readOnly
+                style={{ backgroundColor: "#f5f5f5", cursor: "not-allowed" }}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Sub Category</label>
+              <input
+                type="text"
+                className="form-input"
+                value={subCategory?.name || "—"}
+                readOnly
+                style={{ backgroundColor: "#f5f5f5", cursor: "not-allowed" }}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Description</label>
+              <textarea
+                className="form-textarea"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Enter product description"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Stock</label>
+              <input
+                type="number"
+                className="form-input"
+                value={stock}
+                onChange={(e) => setStock(e.target.value)}
+                placeholder="Enter stock"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Colors (comma separated)</label>
+              <input
+                type="text"
+                className="form-input"
+                value={colors}
+                onChange={(e) => setColors(e.target.value)}
+                placeholder="e.g. Red, Blue, Black"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Tags (comma separated)</label>
+              <input
+                type="text"
+                className="form-input"
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                placeholder="e.g. summer, casual"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Sizes (comma separated)</label>
+              <input
+                type="text"
+                className="form-input"
+                value={sizes}
+                onChange={(e) => setSizes(e.target.value)}
+                placeholder="e.g. S, M, L, XL"
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Upload Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setImage(e.target.files[0])}
+                className="form-input"
+              />
+              {image && (
+                <div className="img-preview">
+                  <img
+                    src={
+                      typeof image === "string"
+                        ? image
+                        : URL.createObjectURL(image)
+                    }
+                    alt="product"
+                    className="preview-img"
+                  />
                 </div>
-                <div className="mb-3 ms-2">
-                  <button
-                    className="btn btn-danger"
-                    onClick={handleDeleteProduct}
-                  >
-                    DELETE PRODUCT
-                  </button>
-                </div>
-              </div>
+              )}
             </div>
           </div>
-        </div>
+
+          <div className="form-actions">
+            <button type="submit" className="submit-btn">
+              Update Product
+            </button>
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={handleDeleteProduct}
+            >
+              Delete Product
+            </button>
+          </div>
+        </form>
       </div>
-    </Layout>
+    </AdminLayout>
   );
 };
 
